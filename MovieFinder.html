@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineNova</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Global Reset & Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", Arial, sans-serif;
+      }
+      body {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        color: #ecf0f1;
+        padding: 20px;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: rgba(44, 62, 80, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+      }
+      /* Header & Navigation */
+      header {
+        text-align: left;
+        margin-bottom: 20px;
+        padding-left: 10px;
+        border-bottom: 2px solid #3498db;
+      }
+      header h1 {
+        font-size: 2.5rem;
+        color: #ecf0f1;
+        padding-bottom: 10px;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding-left: 10px;
+      }
+      .nav-bar button {
+        background: none;
+        border: none;
+        padding: 10px 15px;
+        font-size: 1.1rem;
+        color: #bdc3c7;
+        cursor: pointer;
+        transition: color 0.3s, border-bottom 0.3s;
+      }
+      .nav-bar button.active {
+        color: #ecf0f1;
+        border-bottom: 2px solid #3498db;
+      }
+      .nav-bar button:hover {
+        color: #ecf0f1;
+      }
+      /* Search Section */
+      .search-section {
+        background-color: rgba(52, 73, 94, 0.8);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+      .search-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .filters {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      input[type="text"],
+      select {
+        padding: 10px;
+        border: 1px solid #7f8c8d;
+        border-radius: 4px;
+        background-color: #34495e;
+        color: #ecf0f1;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: #3498db;
+      }
+      input[type="text"] {
+        width: 350px;
+      }
+      select {
+        width: 180px;
+        cursor: pointer;
+      }
+      button {
+        padding: 10px 15px;
+        background-color: #3498db;
+        border: none;
+        border-radius: 4px;
+        color: #ecf0f1;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      /* Loading, Error & Stats */
+      .stats,
+      #loading,
+      .error,
+      .no-results {
+        text-align: left;
+        padding-left: 10px;
+        margin: 10px 0;
+      }
+      #loading {
+        font-size: 1.1rem;
+        color: #3498db;
+      }
+      .error {
+        color: #e74c3c;
+        font-weight: bold;
+      }
+      /* Movies & Watchlist Grid Layout */
+      #movies-container,
+      #watchlist-container {
+        display: grid;
+        gap: 15px;
+        padding: 20px 10px;
+      }
+      #movies-container {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+      #watchlist-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      .movie-card {
+        background-color: #34495e;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        will-change: transform;
+        backface-visibility: hidden;
+      }
+      .movie-card:hover {
+        transform: scale(1.02);
+      }
+      .movie-poster img {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        backface-visibility: hidden;
+      }
+      .movie-rating {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #e74c3c;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+      .movie-info {
+        padding: 15px;
+      }
+      .movie-info h3 {
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+      }
+      .movie-info p {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        color: #bdc3c7;
+      }
+      .movie-details {
+        display: flex;
+        gap: 10px;
+        font-size: 0.8rem;
+      }
+      .badge {
+        background-color: #2c3e50;
+        padding: 4px 8px;
+        border-radius: 12px;
+      }
+      .watchlist-btn {
+        width: 100%;
+        margin-top: 10px;
+        background-color: #e74c3c;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #ecf0f1;
+        cursor: pointer;
+        transition: opacity 0.3s;
+      }
+      .watchlist-btn:hover {
+        opacity: 0.9;
+      }
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+      }
+      .modal-content {
+        background-color: #2c3e50;
+        margin: 10% auto;
+        padding: 20px;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      }
+      .close-modal {
+        float: right;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ecf0f1;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+      .close-modal:hover {
+        color: #3498db;
+      }
+      .platform {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #34495e;
+        border-radius: 6px;
+      }
+      .platform-logo {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
+      .platform-info {
+        font-size: 0.9rem;
+      }
+      @media (max-width: 768px) {
+        .search-box,
+        .filters {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        input[type="text"],
+        select {
+          width: 100%;
+          max-width: 350px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header & Navigation -->
+      <header>
+        <h1>CineNova</h1>
+      </header>
+      <nav class="nav-bar">
+        <button id="search-nav" class="active">Search Movies</button>
+        <button id="watchlist-nav">My Watchlist</button>
+      </nav>
+      <!-- Search Section -->
+      <section id="search-section" class="search-section">
+        <div class="search-box">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Enter movie name..."
+          />
+          <button onclick="searchMovies()">Search</button>
+        </div>
+        <div class="filters">
+          <select id="type-filter">
+            <option value="">All Types</option>
+            <option value="movie">Movies</option>
+            <option value="series">Series</option>
+            <option value="episode">Episodes</option>
+          </select>
+          <select id="year-filter">
+            <option value="">All Years</option>
+            <option value="2020-2024">2020-2024</option>
+            <option value="2015-2019">2015-2019</option>
+            <option value="2010-2014">2010-2014</option>
+            <option value="2000-2009">2000-2009</option>
+            <option value="1990-1999">1990-1999</option>
+            <option value="1980-1989">1980-1989</option>
+          </select>
+          <select id="sort-by">
+            <option value="title">Sort by Title</option>
+            <option value="year">Sort by Year</option>
+            <option value="rating">Sort by Rating</option>
+          </select>
+        </div>
+      </section>
+      <!-- Stats, Loading & Error -->
+      <div id="stats" class="stats"></div>
+      <div id="loading">Loading...</div>
+      <div id="error" class="error"></div>
+      <!-- Movies Section -->
+      <section id="movies-section">
+        <div id="movies-container"></div>
+      </section>
+      <!-- Watchlist Section -->
+      <section id="watchlist-section" style="display: none">
+        <div id="watchlist-container"></div>
+      </section>
+    </div>
+    <!-- Modal for Streaming Platforms -->
+    <div id="streaming-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 id="modal-title"></h2>
+        <div id="streaming-platforms"></div>
+      </div>
+    </div>
+
+    <script>
+      // API Key & DOM Elements
+      const API_KEY = "cbfcbd3c";
+      const moviesContainer = document.getElementById("movies-container");
+      const watchlistContainer = document.getElementById("watchlist-container");
+      const loading = document.getElementById("loading");
+      const error = document.getElementById("error");
+      const stats = document.getElementById("stats");
+      const searchInput = document.getElementById("search-input");
+      const typeFilter = document.getElementById("type-filter");
+      const yearFilter = document.getElementById("year-filter");
+      const sortBy = document.getElementById("sort-by");
+      const searchSection = document.getElementById("search-section");
+      const moviesSection = document.getElementById("movies-section");
+      const watchlistSection = document.getElementById("watchlist-section");
+      const searchNav = document.getElementById("search-nav");
+      const watchlistNav = document.getElementById("watchlist-nav");
+      const modal = document.getElementById("streaming-modal");
+      const modalTitle = document.getElementById("modal-title");
+      const streamingPlatforms = document.getElementById("streaming-platforms");
+
+      // Instead of using JSON, we store the watchlist as a comma-separated string of movie IDs.
+      function getWatchlist() {
+        const stored = localStorage.getItem("watchlist");
+        if (!stored) return [];
+        return stored.split(",").filter((id) => id !== "");
+      }
+      function setWatchlist(list) {
+        localStorage.setItem("watchlist", list.join(","));
+      }
+
+      // Navigation Event Listeners
+      searchNav.addEventListener("click", () => {
+        searchNav.classList.add("active");
+        watchlistNav.classList.remove("active");
+        searchSection.style.display = "block";
+        moviesSection.style.display = "block";
+        watchlistSection.style.display = "none";
+        stats.style.display = "block";
+      });
+      watchlistNav.addEventListener("click", () => {
+        watchlistNav.classList.add("active");
+        searchNav.classList.remove("active");
+        searchSection.style.display = "none";
+        moviesSection.style.display = "none";
+        watchlistSection.style.display = "block";
+        stats.style.display = "none";
+        displayWatchlist();
+      });
+      searchInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") searchMovies();
+      });
+      typeFilter.addEventListener("change", filterAndSortMovies);
+      yearFilter.addEventListener("change", filterAndSortMovies);
+      sortBy.addEventListener("change", filterAndSortMovies);
+
+      // Search Movies using async/await
+      async function searchMovies() {
+        const searchTerm = searchInput.value.trim();
+        if (!searchTerm) {
+          showError("Please enter a movie name");
+          return;
+        }
+        showLoading();
+        clearResults();
+        try {
+          const res = await fetch(
+            `https://www.omdbapi.com/?s=${encodeURIComponent(
+              searchTerm
+            )}&apikey=${API_KEY}&type=${typeFilter.value}`
+          );
+          const data = await res.json();
+          if (data.Error) {
+            hideLoading();
+            showError(data.Error);
+            return;
+          }
+          // Fetch full details for each movie
+          const moviePromises = data.Search.map(async (movie) => {
+            const resMovie = await fetch(
+              `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=${API_KEY}`
+            );
+            return await resMovie.json();
+          });
+          const movies = await Promise.all(moviePromises);
+          hideLoading();
+          currentMovies = movies;
+          filterAndSortMovies();
+        } catch (err) {
+          hideLoading();
+          showError("An error occurred while fetching movies");
+        }
+      }
+
+      // Filter and Sort Movies
+      function filterAndSortMovies() {
+        let filteredMovies = [...currentMovies];
+        if (typeFilter.value) {
+          filteredMovies = filteredMovies.filter(
+            (movie) =>
+              movie.Type.toLowerCase() === typeFilter.value.toLowerCase()
+          );
+        }
+        if (yearFilter.value) {
+          const [startYear, endYear] = yearFilter.value.split("-");
+          filteredMovies = filteredMovies.filter((movie) => {
+            const movieYear = parseInt(movie.Year);
+            return (
+              movieYear >= parseInt(startYear) && movieYear <= parseInt(endYear)
+            );
+          });
+        }
+        switch (sortBy.value) {
+          case "title":
+            filteredMovies.sort((a, b) => a.Title.localeCompare(b.Title));
+            break;
+          case "year":
+            filteredMovies.sort((a, b) => parseInt(b.Year) - parseInt(a.Year));
+            break;
+          case "rating":
+            filteredMovies.sort((a, b) => {
+              const ratingA = parseFloat(a.imdbRating) || 0;
+              const ratingB = parseFloat(b.imdbRating) || 0;
+              return ratingB - ratingA;
+            });
+            break;
+        }
+        displayMovies(filteredMovies);
+      }
+
+      // Display Movies in Grid
+      function displayMovies(movies) {
+        clearResults();
+        if (movies.length === 0) {
+          moviesContainer.innerHTML =
+            '<div class="no-results">No movies found matching your criteria</div>';
+          stats.textContent = "No results found";
+          return;
+        }
+        stats.textContent = `Found ${movies.length} results`;
+        movies.forEach((movie) => {
+          const movieCard = document.createElement("div");
+          movieCard.className = "movie-card";
+          movieCard.addEventListener("click", () => showStreamingInfo(movie));
+          const posterUrl =
+            movie.Poster === "N/A"
+              ? "https://via.placeholder.com/280x400?text=No+Image"
+              : movie.Poster;
+          let movieRating = "";
+          if (movie.imdbRating && movie.imdbRating !== "N/A") {
+            movieRating = `<div class="movie-rating">⭐ ${movie.imdbRating}</div>`;
+          }
+          movieCard.innerHTML = `
+            <div class="movie-poster">
+              <img src="${posterUrl}" alt="${movie.Title}">
+              ${movieRating}
+            </div>
+            <div class="movie-info">
+              <h3>${movie.Title}</h3>
+              <p>${movie.Plot ? movie.Plot : "No plot available."}</p>
+              <div class="movie-details">
+                <span class="badge">${movie.Year}</span>
+                <span class="badge">${
+                  movie.Runtime ? movie.Runtime : "N/A"
+                }</span>
+                <span class="badge">${movie.Type}</span>
+              </div>
+            </div>
+            <button class="watchlist-btn" onclick="event.stopPropagation(); addToWatchlist('${
+              movie.imdbID
+            }')">Add to Watchlist</button>
+          `;
+          moviesContainer.appendChild(movieCard);
+        });
+      }
+
+      // Show Streaming Info Modal
+      function showStreamingInfo(movie) {
+        modalTitle.textContent = `Where to Watch: ${movie.Title}`;
+        streamingPlatforms.innerHTML = "";
+        const availablePlatforms = Object.entries(streamingServices)
+          .filter(() => Math.random() > 0.5)
+          .map(([key, platform]) => platform);
+        if (availablePlatforms.length === 0) {
+          streamingPlatforms.innerHTML = `<div class="platform"><p>This title is currently not available on any streaming platform.</p></div>`;
+        } else {
+          availablePlatforms.forEach((platform) => {
+            const platformElement = document.createElement("div");
+            platformElement.className = "platform";
+            platformElement.innerHTML = `
+              <img class="platform-logo" src="${platform.logo}" alt="${platform.name}" onerror="this.onerror=null;this.src='https://via.placeholder.com/40';">
+              <div class="platform-info">
+                <div class="platform-name">${platform.name}</div>
+                <div class="platform-price">${platform.price}</div>
+              </div>
+            `;
+            streamingPlatforms.appendChild(platformElement);
+          });
+        }
+        modal.style.display = "block";
+      }
+
+      // Add to Watchlist (store as comma-separated movie IDs)
+      function addToWatchlist(imdbID) {
+        let list = getWatchlist();
+        if (list.includes(imdbID)) {
+          alert("Movie already in watchlist!");
+          return;
+        }
+        list.push(imdbID);
+        setWatchlist(list);
+        alert("Movie added to watchlist!");
+      }
+
+      // Display Watchlist by fetching details for each movie ID using Promise.allSettled
+      async function displayWatchlist() {
+        watchlistContainer.innerHTML = "";
+        let list = getWatchlist();
+        if (list.length === 0) {
+          watchlistContainer.innerHTML =
+            '<div class="no-results">Your watchlist is empty.</div>';
+          return;
+        }
+        try {
+          const moviePromises = list.map((id) =>
+            fetch(`https://www.omdbapi.com/?i=${id}&apikey=${API_KEY}`).then(
+              (res) => res.json()
+            )
+          );
+          const results = await Promise.allSettled(moviePromises);
+          results.forEach((result) => {
+            if (result.status === "fulfilled") {
+              const movie = result.value;
+              if (movie.Error) return; // Skip if movie data is invalid
+              const movieCard = document.createElement("div");
+              movieCard.className = "movie-card";
+              movieCard.addEventListener("click", () =>
+                showStreamingInfo(movie)
+              );
+              const posterUrl =
+                movie.Poster === "N/A"
+                  ? "https://via.placeholder.com/280x400?text=No+Image"
+                  : movie.Poster;
+              let movieRating = "";
+              if (movie.imdbRating && movie.imdbRating !== "N/A") {
+                movieRating = `<div class="movie-rating">⭐ ${movie.imdbRating}</div>`;
+              }
+              movieCard.innerHTML = `
+                <div class="movie-poster">
+                  <img src="${posterUrl}" alt="${movie.Title}">
+                  ${movieRating}
+                </div>
+                <div class="movie-info">
+                  <h3>${movie.Title}</h3>
+                  <p>${movie.Plot ? movie.Plot : "No plot available."}</p>
+                  <div class="movie-details">
+                    <span class="badge">${movie.Year}</span>
+                    <span class="badge">${
+                      movie.Runtime ? movie.Runtime : "N/A"
+                    }</span>
+                    <span class="badge">${movie.Type}</span>
+                  </div>
+                </div>
+                <button class="watchlist-btn" onclick="event.stopPropagation(); removeFromWatchlist('${
+                  movie.imdbID
+                }')">Remove from Watchlist</button>
+              `;
+              watchlistContainer.appendChild(movieCard);
+            }
+          });
+        } catch (err) {
+          alert("Error loading watchlist.");
+        }
+      }
+
+      // Remove from Watchlist
+      function removeFromWatchlist(imdbID) {
+        let list = getWatchlist();
+        list = list.filter((id) => id !== imdbID);
+        setWatchlist(list);
+        displayWatchlist();
+        alert("Movie removed from watchlist.");
+      }
+
+      // Helper Functions for Loading & Error States
+      function showLoading() {
+        loading.style.display = "block";
+        error.style.display = "none";
+      }
+      function hideLoading() {
+        loading.style.display = "none";
+      }
+      function showError(message) {
+        error.textContent = message;
+        error.style.display = "block";
+      }
+      function clearResults() {
+        moviesContainer.innerHTML = "";
+        error.style.display = "none";
+      }
+
+      // Streaming Services
+      const streamingServices = {
+        netflix: {
+          name: "Netflix",
+          logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+          price: "$9.99/month",
+        },
+        prime: {
+          name: "Amazon Prime",
+          logo: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png",
+          price: "$8.99/month",
+        },
+        disney: {
+          name: "Disney+",
+          logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg",
+          price: "$7.99/month",
+        },
+      };
+
+      // Display Random Movies on Page Load
+      async function displayRandomMovies() {
+        clearResults();
+        showLoading();
+        stats.textContent = "Showing Top 10 Movies";
+        const popularMovies = [
+          "Inception",
+          "The Dark Knight",
+          "Interstellar",
+          "Pulp Fiction",
+          "Forrest Gump",
+          "The Matrix",
+          "Gladiator",
+          "The Godfather",
+          "The Shawshank Redemption",
+          "Titanic",
+          "Fight Club",
+          "Avatar",
+          "Jurassic Park",
+          "Star Wars",
+        ];
+        const shuffled = popularMovies.sort(() => 0.5 - Math.random());
+        const selectedMovies = shuffled.slice(0, 10);
+        try {
+          const moviePromises = selectedMovies.map(async (title) => {
+            const res = await fetch(
+              `https://www.omdbapi.com/?t=${encodeURIComponent(
+                title
+              )}&apikey=${API_KEY}`
+            );
+            return await res.json();
+          });
+          const movies = await Promise.all(moviePromises);
+          hideLoading();
+          currentMovies = movies.filter((movie) => movie && !movie.Error);
+          displayMovies(currentMovies);
+        } catch (err) {
+          hideLoading();
+          showError("An error occurred while fetching top movies.");
+        }
+      }
+
+      // Modal Close Event
+      document.querySelector(".close-modal").onclick = () =>
+        (modal.style.display = "none");
+      window.onclick = (e) => {
+        if (e.target === modal) modal.style.display = "none";
+      };
+
+      // On DOM Load display random movies
+      document.addEventListener("DOMContentLoaded", () => {
+        displayRandomMovies();
+      });
+    </script>
+  </body>
+</html>
